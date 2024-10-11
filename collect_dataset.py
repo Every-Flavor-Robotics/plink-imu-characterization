@@ -4,7 +4,14 @@ import time
 import os
 import numpy as np
 import board
+
+# Accel and Gyro imports
+from adafruit_lsm6ds import Rate as LSM6DSRate
+from adafruit_lsm6ds import AccelRange, GyroRange
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX
+
+from adafruit_lis3mdl import Rate as LIS3MDLRate
+from adafruit_lis3mdl import PerformanceMode, Range, OperationMode
 from adafruit_lis3mdl import LIS3MDL
 from pyplink import Plink
 
@@ -27,6 +34,16 @@ def setup_external_imu():
     i2c = board.I2C()  # uses board.SCL and board.SDA
     gyro_accel = LSM6DSOX(i2c)
     mag = LIS3MDL(i2c)
+
+    gyro_accel.accelerometer_range = AccelRange.RANGE_8G
+    gyro_accel.gyro_range = GyroRange.RANGE_2000_DPS
+    gyro_accel.accelerometer_data_rate = LSM6DSRate.RATE_208_HZ
+    gyro_accel.gyro_data_rate = LSM6DSRate.RATE_208_HZ
+
+    mag.range = Range.RANGE_4_GAUSS
+    mag.data_rate = LIS3MDLRate.RATE_300_HZ
+    mag.performance_mode = PerformanceMode.HIGH_PERFORMANCE
+    mag.operation_mode = OperationMode.CONTINUOUS
 
     return gyro_accel, mag
 
@@ -56,9 +73,11 @@ def main(experiment_name: str, data_collection_period: int = 10):
     plink = setup_plink()
 
     # Three second countdown
-    for i in range(3, 0, -1):
+    for i in range(5, 0, -1):
         secho(f"Starting in {i} seconds", fg="yellow")
         time.sleep(1)
+
+    plink.channel_1.power_command = 1.0
 
     secho("Starting data collection", fg="green")
 
