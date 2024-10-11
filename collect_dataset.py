@@ -8,11 +8,12 @@ from adafruit_lsm6ds.lsm6dsox import LSM6DSOX
 from adafruit_lis3mdl import LIS3MDL
 from pyplink import Plink
 
-def create_experiment_dir(name: str = None):
-    if(name is None):
-        name = time.strftime('experiment_%Y-%m-%d_%H-%M-%S')
 
-    experiment_dir = f"experiments/{time.strftime('%Y-%m-%d_%H-%M-%S')}"
+def create_experiment_dir(name: str = None):
+    if name is None:
+        name = time.strftime("experiment_%Y-%m-%d_%H-%M-%S")
+
+    experiment_dir = f"experiments/{name}"
 
     # If it exists, raise an error
     if os.path.exists(experiment_dir):
@@ -29,6 +30,7 @@ def setup_external_imu():
 
     return gyro_accel, mag
 
+
 def setup_plink():
     plink = Plink()
     plink.connect()
@@ -36,33 +38,38 @@ def setup_plink():
     return plink
 
 
-
-
 @click.command()
-@click.argument('experiment_name')
-@click.option('--data_collection_period', default=10, help='Period in seconds to collect data')
+@click.argument("experiment_name")
+@click.option(
+    "--data_collection_period", default=10, help="Period in seconds to collect data"
+)
 def main(experiment_name: str, data_collection_period: int = 10):
 
     experiment_dir = create_experiment_dir(experiment_name)
 
-    secho(f"Starting experiment {experiment_name} in directory {experiment_dir}", fg='green')
+    secho(
+        f"Starting experiment {experiment_name} in directory {experiment_dir}",
+        fg="green",
+    )
 
     gyro_accel, mag = setup_external_imu()
     plink = setup_plink()
 
     # Three second countdown
     for i in range(3, 0, -1):
-        secho(f"Starting in {i} seconds", fg='yellow')
+        secho(f"Starting in {i} seconds", fg="yellow")
         time.sleep(1)
 
-    secho("Starting data collection", fg='green')
+    secho("Starting data collection", fg="green")
 
     start_time = time.perf_counter()  # Use perf_counter for higher resolution
     end_time = start_time + data_collection_period
 
     # Preallocate arrays
     estimated_sample_rate = 1000  # Hz
-    MAX_SAMPLES = int(data_collection_period * estimated_sample_rate * 1.1)  # Extra buffer
+    MAX_SAMPLES = int(
+        data_collection_period * estimated_sample_rate * 1.1
+    )  # Extra buffer
 
     timestamps = np.zeros(MAX_SAMPLES, dtype=np.float64)
 
@@ -104,11 +111,13 @@ def main(experiment_name: str, data_collection_period: int = 10):
             internal_gyro_data = plink.imu.gyro
             internal_mag_data = plink.imu.mag
         except Exception as e:
-            secho(f"Error reading sensors: {e}", fg='red')
+            secho(f"Error reading sensors: {e}", fg="red")
             continue  # Skip this sample
 
         if sample_idx >= MAX_SAMPLES:
-            secho("Maximum sample capacity reached. Ending data collection.", fg='yellow')
+            secho(
+                "Maximum sample capacity reached. Ending data collection.", fg="yellow"
+            )
             break
 
         timestamps[sample_idx] = timestamp
@@ -135,16 +144,19 @@ def main(experiment_name: str, data_collection_period: int = 10):
     internal_mag_data_array = internal_mag_data_array[:sample_idx, :]
 
     # Save the data to npz file
-    np.savez(os.path.join(experiment_dir, 'data.npz'),
-             timestamps=timestamps,
-             external_accel=external_accel_data_array,
-             external_gyro=external_gyro_data_array,
-             external_mag=external_mag_data_array,
-             internal_accel=internal_accel_data_array,
-             internal_gyro=internal_gyro_data_array,
-             internal_mag=internal_mag_data_array)
+    np.savez(
+        os.path.join(experiment_dir, "data.npz"),
+        timestamps=timestamps,
+        external_accel=external_accel_data_array,
+        external_gyro=external_gyro_data_array,
+        external_mag=external_mag_data_array,
+        internal_accel=internal_accel_data_array,
+        internal_gyro=internal_gyro_data_array,
+        internal_mag=internal_mag_data_array,
+    )
 
-    secho("Data collection complete. Data saved to 'data.npz'.", fg='green')
+    secho("Data collection complete. Data saved to 'data.npz'.", fg="green")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
