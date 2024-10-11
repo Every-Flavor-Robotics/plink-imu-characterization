@@ -43,9 +43,15 @@ def plot_data(experiment_name):
     axs[2].set_ylabel('Acceleration Z (m/s²)')
     axs[2].legend()
 
+    # Set the same y-axis limits for all subplots
+    accel_min = min(external_accel.min(), internal_accel.min())
+    accel_max = max(external_accel.max(), internal_accel.max())
+    for ax in axs:
+        ax.set_ylim(accel_min, accel_max)
+
     plt.suptitle('Accelerometer Data Comparison')
     plt.tight_layout()
-    plt.savefig(os.path.join(experiment_dir, 'accelerometer_data_comparison.png
+    plt.savefig(os.path.join(experiment_dir, 'accelerometer_data_comparison.png'))
 
     # Gyroscope Data
     fig, axs = plt.subplots(3, 1, sharex=True)
@@ -64,6 +70,12 @@ def plot_data(experiment_name):
     axs[2].set_xlabel('Time (s)')
     axs[2].set_ylabel('Angular Velocity Z (°/s)')
     axs[2].legend()
+
+    # Set the same y-axis limits for all subplots
+    gyro_min = min(external_gyro.min(), internal_gyro.min())
+    gyro_max = max(external_gyro.max(), internal_gyro.max())
+    for ax in axs:
+        ax.set_ylim(gyro_min, gyro_max)
 
     plt.suptitle('Gyroscope Data Comparison')
     plt.tight_layout()
@@ -86,6 +98,12 @@ def plot_data(experiment_name):
     axs[2].set_xlabel('Time (s)')
     axs[2].set_ylabel('Magnetic Field Z (µT)')
     axs[2].legend()
+
+    # Set the same y-axis limits for all subplots
+    mag_min = min(external_mag.min(), internal_mag.min())
+    mag_max = max(external_mag.max(), internal_mag.max())
+    for ax in axs:
+        ax.set_ylim(mag_min, mag_max)
 
     plt.suptitle('Magnetometer Data Comparison')
     plt.tight_layout()
