@@ -22,14 +22,14 @@ def create_experiment_dir(name: str = None):
     return experiment_dir
 
 
-def setup_external_imu(self):
+def setup_external_imu():
     i2c = board.I2C()  # uses board.SCL and board.SDA
     gyro_accel = LSM6DSOX(i2c)
     mag = LIS3MDL(i2c)
 
     return gyro_accel, mag
 
-def setup_plink(self):
+def setup_plink():
     plink = Plink()
     plink.connect()
 
@@ -100,9 +100,9 @@ def main(experiment_name: str, data_collection_period: int = 10):
             external_gyro_data = gyro_accel.gyro
             external_mag_data = mag.magnetic
 
-            internal_accel_data = plink.accel
-            internal_gyro_data = plink.gyro
-            internal_mag_data = plink.mag
+            internal_accel_data = plink.imu.accel
+            internal_gyro_data = plink.imu.gyro
+            internal_mag_data = plink.imu.mag
         except Exception as e:
             secho(f"Error reading sensors: {e}", fg='red')
             continue  # Skip this sample
