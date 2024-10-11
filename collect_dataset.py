@@ -1,6 +1,8 @@
 import click
 from click import secho
 import time
+import os
+import numpy as np
 import board
 from adafruit_lsm6ds.lsm6dsox import LSM6DSOX
 from adafruit_lis3mdl import LIS3MDL
@@ -144,7 +146,5 @@ def main(experiment_name: str, data_collection_period: int = 10):
 
     secho("Data collection complete. Data saved to 'data.npz'.", fg='green')
 
-
-
-
-
+if __name__ == '__main__':
+    main()
