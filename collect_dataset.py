@@ -42,7 +42,7 @@ def setup_external_imu():
 
     mag.range = Range.RANGE_4_GAUSS
     mag.data_rate = LIS3MDLRate.RATE_300_HZ
-    mag.performance_mode = PerformanceMode.HIGH_PERFORMANCE
+    mag.performance_mode = PerformanceMode.MODE_ULTRA
     mag.operation_mode = OperationMode.CONTINUOUS
 
     return gyro_accel, mag
