@@ -45,7 +45,7 @@ def plot_data(experiment_name):
 
     plt.suptitle('Accelerometer Data Comparison')
     plt.tight_layout()
-    plt.savefig(experiment_dir / 'accelerometer_data_comparison.png')
+    plt.savefig(os.path.join(experiment_dir, 'accelerometer_data_comparison.png
 
     # Gyroscope Data
     fig, axs = plt.subplots(3, 1, sharex=True)
@@ -67,7 +67,7 @@ def plot_data(experiment_name):
 
     plt.suptitle('Gyroscope Data Comparison')
     plt.tight_layout()
-    plt.savefig(experiment_dir / 'gyroscope_data_comparison.png')
+    plt.savefig(os.path.join(experiment_dir, 'gyroscope_data_comparison.png'))
 
     # Magnetometer Data
     fig, axs = plt.subplots(3, 1, sharex=True)
@@ -89,9 +89,7 @@ def plot_data(experiment_name):
 
     plt.suptitle('Magnetometer Data Comparison')
     plt.tight_layout()
-
-
-    plt.savefig(experiment_dir / 'magnetometer_data_comparison.png')
+    plt.savefig(os.path.join(experiment_dir, 'magnetometer_data_comparison.png'))
 
 if __name__ == '__main__':
     plot_data()
