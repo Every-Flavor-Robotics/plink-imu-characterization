@@ -101,7 +101,8 @@ def main():
     axes[2].grid()
     axes[2].legend()
 
-    plt.show(block="no_block" not in sys.argv)  # don't block when script run by CI
+    # plt.show(block="no_block" not in sys.argv)  # don't block when script run by CI
+    plt.savefig("sensor_data.png")
 
 
 if __name__ == "__main__":
