@@ -40,6 +40,14 @@ def main():
             1 / 100
         )  # Each sample is 0.01 seconds apart
 
+        # Update progress bar every 100 samples
+        if i % 100 == 0 or i == MAX_SAMPLES - 1:
+            progress = (i + 1) / MAX_SAMPLES
+            bar_length = 40  # Length of the progress bar
+            filled_length = int(bar_length * progress)
+            bar = "█" * filled_length + "-" * (bar_length - filled_length)
+            print(f"\rProgress: |{bar}| {progress*100:.1f}%", end="")
+
         # Wait until the next sample time
         now = time.perf_counter()
         time_to_wait = next_sample_time - now
@@ -47,8 +55,8 @@ def main():
             time.sleep(time_to_wait)
 
         # Read data from the IMU
-        gyro = plink.imu.gyro
-        accel = plink.imu.accel
+        gyro = np.array(plink.imu.gyro)
+        accel = np.array(plink.imu.accel)
 
         # Process sensor data
         ahrs.update_no_magnetometer(gyro, accel, 1 / 100)  # 100 Hz sample rate
@@ -61,6 +69,9 @@ def main():
         gyroscope[i] = gyro
         accelerometer[i] = accel
         timestamp[i] = time.perf_counter()
+
+    # After the loop, print a newline to move to the next line
+    print()
 
     # Plot sensor data
     _, axes = plt.subplots(nrows=3, sharex=True)
@@ -90,8 +101,7 @@ def main():
     axes[2].grid()
     axes[2].legend()
 
-    # plt.show(block="no_block" not in sys.argv)  # don't block when script run by CI
-    plt.savefig("sensor_data.png")
+    plt.show(block="no_block" not in sys.argv)  # don't block when script run by CI
 
 
 if __name__ == "__main__":
