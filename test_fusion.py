@@ -25,6 +25,8 @@ def main():
 
     plink.calibrate_imu()  # Calibrate the IMU
 
+    start_time = time.perf_counter()  # Use perf_counter for higher resolution
+
     # Start collecting data
     # Collect data for 30 seconds, at 100 Hz
     for i in range(MAX_SAMPLES):
