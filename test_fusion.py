@@ -20,26 +20,10 @@ def main():
 
     # Preallocate arrays
     MAX_SAMPLES = 3000
-    gyroscope = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)
-    accelerometer = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)
-    timestamp = np.zeros(MAX_SAMPLES, dtype=np.float64)
 
     euler = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)  # Initialize with zeros
 
-    # Read gyro data for 5 seconds, and zero the gyro data
-    gyro_mean = np.zeros(3)
-    for i in range(500):
-        gyro = np.array(plink.imu.gyro)
-        gyro_mean += gyro
-        time.sleep(0.01)
-
-    gyro_mean /= 500
-
-    # Set up variables for time management
-    start_time = time.perf_counter()
-
-    # Initialize the AHRS object outside the loop
-    ahrs = imufusion.Ahrs()
+    plink.calibrate_imu()  # Calibrate the IMU
 
     # Start collecting data
     # Collect data for 30 seconds, at 100 Hz
@@ -63,43 +47,18 @@ def main():
         if time_to_wait > 0:
             time.sleep(time_to_wait)
 
-        # Read data from the IMU
-        gyro = np.array(plink.imu.gyro) - gyro_mean
-        accel = np.array(plink.imu.accel)
+        # Read data from the Imu
+        gravity_vector = np.array(plink.imu.gravity_vector)
 
-        # Process sensor data
-        ahrs.update_no_magnetometer(gyro, accel, 1 / 100)  # 100 Hz sample rate
+        euler_angles = gravity_vector
 
-        # Get Euler angles and store them
-        euler_angles = ahrs.quaternion.to_euler()
-        euler[i] = euler_angles  # Store the Euler angles
-
-        # Store data
-        gyroscope[i] = gyro
-        accelerometer[i] = accel
         timestamp[i] = time.perf_counter()
 
     # After the loop, print a newline to move to the next line
     print()
 
     # Plot sensor data
-    _, axes = plt.subplots(nrows=3, sharex=True)
-
-    axes[0].plot(timestamp - timestamp[0], gyroscope[:, 0], "tab:red", label="X")
-    axes[0].plot(timestamp - timestamp[0], gyroscope[:, 1], "tab:green", label="Y")
-    axes[0].plot(timestamp - timestamp[0], gyroscope[:, 2], "tab:blue", label="Z")
-    axes[0].set_title("Gyroscope")
-    axes[0].set_ylabel("Degrees/s")
-    axes[0].grid()
-    axes[0].legend()
-
-    axes[1].plot(timestamp - timestamp[0], accelerometer[:, 0], "tab:red", label="X")
-    axes[1].plot(timestamp - timestamp[0], accelerometer[:, 1], "tab:green", label="Y")
-    axes[1].plot(timestamp - timestamp[0], accelerometer[:, 2], "tab:blue", label="Z")
-    axes[1].set_title("Accelerometer")
-    axes[1].set_ylabel("g")
-    axes[1].grid()
-    axes[1].legend()
+    _, axes = plt.subplots(nrows=1, sharex=True)
 
     axes[2].plot(timestamp - timestamp[0], euler[:, 0], "tab:red", label="Roll")
     axes[2].plot(timestamp - timestamp[0], euler[:, 1], "tab:green", label="Pitch")
@@ -111,7 +70,7 @@ def main():
     axes[2].legend()
 
     # plt.show(block="no_block" not in sys.argv)  # don't block when script run by CI
-    plt.savefig("sensor_data.png")
+    plt.savefig("sensor_data_onboard_fusion.png")
 
 
 if __name__ == "__main__":
