@@ -61,16 +61,16 @@ def main():
     print()
 
     # Plot sensor data
-    _, axes = plt.subplots(nrows=1, sharex=True)
+    _, axes = plt.subplots(nrows=1)
 
-    axes[2].plot(timestamp - timestamp[0], euler[:, 0], "tab:red", label="Roll")
-    axes[2].plot(timestamp - timestamp[0], euler[:, 1], "tab:green", label="Pitch")
-    axes[2].plot(timestamp - timestamp[0], euler[:, 2], "tab:blue", label="Yaw")
-    axes[2].set_title("Euler angles")
-    axes[2].set_xlabel("Seconds")
-    axes[2].set_ylabel("Degrees")
-    axes[2].grid()
-    axes[2].legend()
+    axes.plot(timestamp - timestamp[0], euler[:, 0], "tab:red", label="Roll")
+    axes.plot(timestamp - timestamp[0], euler[:, 1], "tab:green", label="Pitch")
+    axes.plot(timestamp - timestamp[0], euler[:, 2], "tab:blue", label="Yaw")
+    axes.set_title("Gravity Vector Orientation")
+    axes.set_xlabel("Seconds")
+    # axes.set_ylabel("")
+    axes.grid()
+    axes.legend()
 
     # plt.show(block="no_block" not in sys.argv)  # don't block when script run by CI
     plt.savefig("sensor_data_onboard_fusion.png")
