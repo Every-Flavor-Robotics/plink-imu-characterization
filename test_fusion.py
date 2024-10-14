@@ -26,6 +26,15 @@ def main():
 
     euler = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)  # Initialize with zeros
 
+    # Read gyro data for 5 seconds, and zero the gyro data
+    gyro_mean = np.zeros(3)
+    for i in range(500):
+        gyro = np.array(plink.imu.gyro)
+        gyro_mean += gyro
+        time.sleep(0.01)
+
+    gyro_mean /= 500
+
     # Set up variables for time management
     start_time = time.perf_counter()
 
@@ -55,7 +64,7 @@ def main():
             time.sleep(time_to_wait)
 
         # Read data from the IMU
-        gyro = np.array(plink.imu.gyro)
+        gyro = np.array(plink.imu.gyro) - gyro_mean
         accel = np.array(plink.imu.accel)
 
         # Process sensor data
