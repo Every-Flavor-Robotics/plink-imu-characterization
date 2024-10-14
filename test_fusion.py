@@ -21,7 +21,7 @@ def main():
     # Preallocate arrays
     MAX_SAMPLES = 3000
 
-    euler = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)  # Initialize with zeros
+    gravity = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)  # Initialize with zeros
     timestamp = np.zeros(MAX_SAMPLES, dtype=np.float64)
 
     plink.calibrate_imu()  # Calibrate the IMU
@@ -51,9 +51,7 @@ def main():
             time.sleep(time_to_wait)
 
         # Read data from the Imu
-        gravity_vector = np.array(plink.imu.gravity_vector)
-
-        euler_angles = gravity_vector
+        gravity[i, :] = np.array(plink.imu.gravity_vector)
 
         timestamp[i] = time.perf_counter()
 
@@ -63,9 +61,9 @@ def main():
     # Plot sensor data
     _, axes = plt.subplots(nrows=1)
 
-    axes.plot(timestamp - timestamp[0], euler[:, 0], "tab:red", label="Roll")
-    axes.plot(timestamp - timestamp[0], euler[:, 1], "tab:green", label="Pitch")
-    axes.plot(timestamp - timestamp[0], euler[:, 2], "tab:blue", label="Yaw")
+    axes.plot(timestamp - timestamp[0], gravity[:, 0], "tab:red", label="Roll")
+    axes.plot(timestamp - timestamp[0], gravity[:, 1], "tab:green", label="Pitch")
+    axes.plot(timestamp - timestamp[0], gravity[:, 2], "tab:blue", label="Yaw")
     axes.set_title("Gravity Vector Orientation")
     axes.set_xlabel("Seconds")
     # axes.set_ylabel("")
