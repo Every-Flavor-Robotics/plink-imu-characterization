@@ -22,6 +22,7 @@ def main():
     MAX_SAMPLES = 3000
 
     euler = np.zeros((MAX_SAMPLES, 3), dtype=np.float32)  # Initialize with zeros
+    timestamp = np.zeros(MAX_SAMPLES, dtype=np.float64)
 
     plink.calibrate_imu()  # Calibrate the IMU
 
